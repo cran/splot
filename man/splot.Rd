@@ -4,52 +4,38 @@
 \alias{splot}
 \title{Split Plot}
 \usage{
-splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
-  split = "median", data = NULL, su = NULL, levels = list(),
-  error = "standard", error.color = "#585858", error.lwd = 2, lim = 9,
-  lines = TRUE, ..., line.type = "l", mv.scale = "none",
-  mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", colors = "pastel", colorby = NULL, myl = NULL,
-  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0",
-  adj = 2, leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
-  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, font = c(title = 2, leg = 1, note = 3),
-  cex = c(title = 1.5, leg = 1, note = 0.7), sud = TRUE, labels = TRUE,
-  labels.filter = "_|\\\\.", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
-  TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
+splot(y, data = NULL, su = NULL, type = "", split = "median",
+  levels = list(), sort = NULL, error = "standard",
+  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE, ...,
+  x = NULL, by = NULL, between = NULL, cov = NULL, line.type = "l",
+  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
+  dims = dev.size(), file.name = "splot", colors = "pastel",
+  colorby = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
+  ylas = 1, bw = "nrd0", adj = 2, leg = "outside", lpos = "auto",
+  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
+  lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2,
+  sud = 1, leg = 1, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 1, note =
+  0.7), sud = TRUE, labels = TRUE, labels.filter = "_|\\\\.",
+  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
+  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
+  model = FALSE, options = NULL, add = NULL)
 }
 \arguments{
 \item{y}{A formula (see note), or the primary variable(s) to be shown on the y axis unless (\code{x} is not specified).
 When not a formula, this can be one or more variables as objects or names in \code{data}.}
 
-\item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
-If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
-\code{type} will be set to \code{'line'} unless specified.}
+\item{data}{a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
+in the environment.}
 
-\item{by}{the 'splitting' variable within each plot, by which the plotted values of \code{x} and \code{y} will be
-grouped.}
-
-\item{between}{a single object or name, or two in a vector (e.g., \code{c(b1, b2)}), the levels of which will determine
-the number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows,
-and levels of the second as columns).}
-
-\item{cov}{additional variables used for adjustment. Bar and line plots include all \code{cov} variables in their
-regression models (via \code{\link[stats]{lm}}, e.g., \code{lm(y ~ 0 + x + cov1 + cov2)}) as covariates. Scatter plots
-with lines include all \code{cov} variables in the regression model to adjust the prediction line (e.g.,
-\code{lm(y ~ x + x^2)}).}
+\item{su}{a subset to all variables, applied after they are all retrieved from \code{data} or the environment.}
 
 \item{type}{determines the type of plot to make, between \code{"bar"}, \code{"line"}, \code{"density"}, or
 \code{"scatter"}. If \code{"density"}, \code{x} is ignored. Anything including the first letter of each is accepted
 (e.g., \code{type='l'}).}
 
 \item{split}{how to split any continuous variables (those with more than \code{lim} levels as factors). Default is
-\code{"median"}, with \code{"mean"}, \code{"standard deviation"}, and \code{"quantile"} as options.}
-
-\item{data}{a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
-in the environment.}
-
-\item{su}{a subset to all variables, applied after they are all retrieved from \code{data} or the environment.}
+\code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or a number as options. If a number,
+the variable is broken into roughly equal chunks.}
 
 \item{levels}{a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To
 reorder a factor, enter a vector of either numbers or existing level names in the new order (e.g.,
@@ -58,7 +44,12 @@ length as the number of levels. To rename and reorder, enter a list, with names 
 second entry (e.g., \code{levels =} \code{list(var =} \code{list(c('a','b','c'),} \code{c(3,2,1)))}). This happens after
 variables are split, so names and orders should correspond to the new split levels of split variables. For example, if
 a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are the levels
-reordering or renaming would apply to.}
+reordering or renaming would apply to. Multiple variables entered as \code{y} can be renamed and sorted with an entry
+titled 'mv'.}
+
+\item{sort}{string: if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's \code{y}
+value. Unspecified or \code{NULL} won't do any additional sorting. Anything starting with 'd' or 't' will sort highest to
+lowest.}
 
 \item{error}{string: sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no error
 bars will be shown. Otherwise, the default is \code{"standard error"} (\code{'^s'}), with \code{"confidence intervals"}
@@ -78,7 +69,23 @@ is treated as infinite (set to \code{Inf}).}
 (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. \code{'connected'} (\code{'^e|^co|^d'}) will draw
 lines connecting all points, and \code{FALSE} will not draw any lines.}
 
-\item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. The
+\item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. The}
+
+\item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
+If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
+\code{type} will be set to \code{'line'} unless specified.}
+
+\item{by}{the 'splitting' variable within each plot, by which the plotted values of \code{x} and \code{y} will be
+grouped.}
+
+\item{between}{a single object or name, or two in a vector (e.g., \code{c(b1, b2)}), the levels of which will determine
+the number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows,
+and levels of the second as columns).}
+
+\item{cov}{additional variables used for adjustment. Bar and line plots include all \code{cov} variables in their
+regression models (via \code{\link[stats]{lm}}, e.g., \code{lm(y ~ 0 + x + cov1 + cov2)}) as covariates. Scatter plots
+with lines include all \code{cov} variables in the regression model to adjust the prediction line (e.g.,
+\code{lm(y ~ x + x^2)}).
 \code{\link[graphics]{par}} options \code{col}, \code{mfrow}, \code{oma}, \code{mar}, \code{mgp}, \code{font.main},
 \code{cex.main}, \code{font.lab}, \code{tcl}, \code{pch}, \code{lwd}, and \code{xpd} are all set within the function,
 but will be overwritten if they are included in the call. For example, \code{col} sets font colors in this case
@@ -112,7 +119,9 @@ pixels depending on \code{format}. Defaults to the dimensions of the plot window
 \item{colors}{sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
 \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by} has
 more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter in
-\code{\link[graphics]{par}} for acceptable manual inputs.}
+\code{\link[graphics]{par}} for acceptable manual inputs. To set text and axis colors, \code{col} sets outside texts
+(title, sud, labx, laby, and note), \code{col.sub} or \code{col.main} sets the frame titles, and \code{col.axis} sets
+the axis text and line colors.}
 
 \item{colorby}{a variable used to set colors and the legend, alternatively to \code{by}. If \code{by} is not missing,
 \code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}. For example, if \code{by}
@@ -175,17 +184,17 @@ value. Otherwise loops through available line types, see \code{\link[graphics]{p
 
 \item{note}{logical: if \code{FALSE}, the note at the bottom about splits and/or lines or error bars is turned off.}
 
-\item{font}{named numeric vector: \code{c(title,leg,note)}. Sets the font of the title, legend, and note. In addition,
-\code{font.lab} sets the x and y label font, \code{font.sub} sets the subset/covariate subheading font, \code{font.axis}
-sets the axis label font, and \code{font.main} sets the between level/n heading font; these are passed to
+\item{font}{named numeric vector: \code{c(title,sud,leg,note)}. Sets the font of the title, su display, legend, and note.
+In addition, \code{font.lab} sets the x and y label font, \code{font.sub} sets the font of the little title in each panel,
+\code{font.axis} sets the axis label font, and \code{font.main} sets the between level/n heading font; these are passed to
 \code{\link[graphics]{par}}. See the input section.}
 
-\item{cex}{named numeric vector: \code{c(title,leg,note)}. Sets the font size of the title, legend, and note. In addition,
-\code{cex.lab} sets the x and y label size, \code{cex.sub} sets the subset/covariate subheading size, \code{cex.axis}
-sets the axis label size, and \code{cex.main} sets the between level/n heading size; these are passed to
+\item{cex}{named numeric vector: \code{c(title,sud,leg,note)}. Sets the font size of the title, su display, legend, and note.
+In addition, \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the size of the little title in each panel,
+\code{cex.axis} sets the axis label size, and \code{cex.main} sets the between level/n heading size; these are passed to
 \code{\link[graphics]{par}}. See the input section.}
 
-\item{sud}{logical: if \code{FALSE}, the heading for subset and covariates/line adjustments is turned off.}
+\item{sud}{logical: if \code{FALSE}, the heading for subset and covariates/line adjustments (su display) is turned off.}
 
 \item{labels}{logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't
 have to set all of them if you want a clean frame).}
@@ -271,10 +280,10 @@ will be drawn at such error-bar-less orphaned levels.
 \strong{unexpected failures}
 
 splot tries to clean up after itself in the case of an error, but you may still run into errors that break things before
-this can happen. If after a failed plot you find that you're unable to make any new plots, you might try entering
-\code{dev.off()} into the console. If new plots look off (splot's \code{\link[graphics]{par}} settings didn't get reset),
-you may have to close the plot window to reset \code{\link[graphics]{par}} (if you're using RStudio, Plots >
-"Remove Plot..." or "Clear All..."), or restart R.
+this can happen. If after a failed plot you find that you're unable to make any new plots, or new plots are drawn over old
+ones, you might try entering \code{dev.off()} into the console. If new plots look off (splot's \code{\link[graphics]{par}}
+settings didn't get reset), you may have to close the plot window to reset \code{\link[graphics]{par}} (if you're using
+RStudio, Plots > "Remove Plot..." or "Clear All..."), or restart R.
 }
 \section{Input}{
 
@@ -301,37 +310,37 @@ set, with other defaults retained (e.g., \code{cex=c(note=1.2)} would be read as
 #simulating data
 n=2000
 dat=data.frame(sapply(c('by','bet1','bet2'),function(c)sample(0:1,n,TRUE)))
-dat$x=eval(quote(
+dat$x=with(dat,
   rnorm(n)+by*-.4+by*bet1*-.3+by*bet2*.3+bet1*bet2*.9-.8+rnorm(n,0,by)
-),envir=dat)
-dat$y=eval(quote(
+)
+dat$y=with(dat,
   x*.2+by*.3+bet2*-.6+bet1*bet2*.8+x*by*bet1*-.5+x*by*bet1*bet2*-.5
   +rnorm(n,5)+rnorm(n,-1,.1*x^2)
-),envir=dat)
+)
 
 #looking at the distribution of y between bets split by by
 splot(y, by=by, between=c(bet1, bet2), data=dat)
 
 #looking at quantile splits of y in y by x
-splot(y~x*y, split='quantile', data=dat)
+splot(y~x*y, dat, split='quantile')
 
 #looking at y by x between bets
-splot(y~x, between=c(bet1, bet2), data=dat)
+splot(y~x, dat, between=c(bet1, bet2))
 
 #sequentially adding levels of split
-splot(y~x*by, data=dat)
-splot(y~x*by*bet1, data=dat)
-splot(y~x*by*bet1*bet2, data=dat)
+splot(y~x*by, dat)
+splot(y~x*by*bet1, dat)
+splot(y~x*by*bet1*bet2, dat)
 
-#same as the last but entered differently
-splot(y, x, by, c(bet1, bet2), data=dat)
+#same as the last but entered by name
+splot(y, x=x, by=by, between=c(bet1, bet2), data=dat)
 
 #zooming in on one of the windows
-splot(y~x*by, data=dat, su=bet1==1&bet2==0)
+splot(y~x*by, dat, bet1==1&bet2==0)
 
 #comparing an adjusted lm prediction line with a loess line
 #this could also be entered as y ~ poly(x,3)
-splot(y~x+x^2+x^3, data=dat, su=bet1==1&bet2==0&by==1, add={
+splot(y~x+x^2+x^3, dat, bet1==1&bet2==0&by==1, add={
   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
   legend('topright', c('lm', 'loess'), lty=c(1, 2), lwd=c(2, 1), bty='n')
 })
@@ -342,6 +351,6 @@ splot(cbind(
   Sine=y+sin(x),
   Cosine=y+cos(x),
   Tangent=y+tan(x)
-)~x, data=dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
+)~x, dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
 
 }

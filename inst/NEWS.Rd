@@ -3,6 +3,37 @@
 \encoding{UTF-8}
 
 
+\section{version 0.3.2}{
+
+	\subsection{Additions}{
+		\itemize{
+			\item sort text x variables by their y values.
+			\item split by a specified number of segments.
+		}
+	}
+	\subsection{Improvements}{
+		\itemize{
+			\item cleared up sub/sud related mixups.
+			\item level ordering now applies to between variables.
+			\item improved formula parsing; expressions should be better recognized
+  as arguments.
+			\item rearranged arguments to be more like other functions; variables other
+  that y must be named, or entered as part of the y formula.
+			\item multiple variables entered as y can now be renamed/ordered with an mv entry
+  in levels.
+		}
+	}
+	\subsection{Bug fixes}{
+		\itemize{
+			\item corrected y-axis labeling for bar plots when autori is true.
+			\item custom notes now overwrite all other note elements,
+			\item specified x levels are now appropriately applied when mv.as.x is true.
+			\item standardized lty behavior across types, and prevented it from causing errors.
+			\item fixed an issue with longer vectors entered directly as arguments.
+			\item multiple y variables with the same name are now treated as different.
+		}
+	}
+}
 \section{version 0.3.1}{
 
 	\subsection{Additions}{

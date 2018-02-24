@@ -1,7 +1,7 @@
 Package: splot
 Type: Package
 Title: Split Plot
-Version: 0.3.1
+Version: 0.3.2
 Author: Micah Iserman
 Maintainer: Micah Iserman <micah.iserman@ttu.edu>
 Description: Automates common plotting tasks to ease data exploration.
@@ -17,6 +17,6 @@ LazyData: TRUE
 RoxygenNote: 6.0.1
 Suggests: knitr, rmarkdown, devEMF
 NeedsCompilation: no
-Packaged: 2017-10-03 22:24:30 UTC; Micah
+Packaged: 2018-02-24 23:31:35 UTC; Micah
 Repository: CRAN
-Date/Publication: 2017-10-03 22:29:21 UTC
+Date/Publication: 2018-02-24 23:39:35 UTC
