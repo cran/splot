@@ -1,8 +1,8 @@
-9c8b15782c5b3fc7cbc2286b3550a800 *DESCRIPTION
-5c87d9c5b5d89bda6be53b116e7fca36 *NAMESPACE
-872be35a7fb18fc06c59aa995222e72f *R/splot.R
-1e5a6b5175fbc36933c4456f0c17bcce *R/utils.R
-a5e4a5eb7f4f4d3f283225c15a50d5e7 *inst/NEWS.Rd
-ca712cfb5e5b7f9b63d7e6f77f8dd523 *man/splot.Rd
+106c0dda581c44bf1e6ef920a8d3d2e8 *DESCRIPTION
+73428fb032cf199fbd325e1ac14fb32b *NAMESPACE
+ffbcc47175f5f2377575f99591c11ee1 *R/splot.R
+1cacd1c8851e962a852eb9fedb2e4d39 *R/utils.R
+47a4debfafcf547c627f9c28ca7b45dd *inst/NEWS.Rd
+1ebff8af9f02a3c6242f44db2496d172 *man/splot.Rd
 e5cdb176ba28a0ea67d79fcbfe549193 *man/splot.bench.Rd
-7b93e78b12937670fecff8e5cfc444c5 *man/splot.color.Rd
+441551e64fd57b93b3765ed1582b018a *man/splot.color.Rd

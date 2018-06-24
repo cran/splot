@@ -3,6 +3,33 @@
 \encoding{UTF-8}
 
 
+\section{version 0.4.0}{
+
+	\subsection{Additions}{
+		\itemize{
+			\item place the legend interactively.
+			\item adjust color opacity, and assign colors in gradients.
+			\item split by specified values.
+			\item display predicted probability lines in scatter plots with 2-level ys.
+			\item allows for non-numeric y variables.
+		}
+	}
+	\subsection{Improvements}{
+		\itemize{
+			\item general improvements in automatic settings
+			\item more reliable connection between data and line colors, types, and widths.
+			\item provides more control over the legend and colorby.
+			\item improved reading of the y and su arguments.
+			\item improved bar plot y-axis labels.
+		}
+	}
+	\subsection{Bug fixes}{
+		\itemize{
+			\item now appropriately recycles short variables.
+			\item avoids an error when levels of by are missing within between splits.
+		}
+	}
+}
 \section{version 0.3.2}{
 
 	\subsection{Additions}{
