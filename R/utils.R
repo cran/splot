@@ -22,8 +22,9 @@
 #'   \code{method='scale'}.
 #' @param flat logical; if \code{FALSE} and \code{x} is a character, factor, or list, or \code{by} is not
 #'   missing, a list is returned.
-#' @param method a character setting the sampling method: If \code{'related'} (\code{'^re|^ran|^o'}),
-#'   RGB values are freely adjusted, resulting in similar colors. Otherwise, RGB values are adjusted
+#' @param method a character setting the sampling method: If \code{'related'} (\code{'^rel|^ran|^o'}),
+#'   RGB values are freely adjusted, resulting in similar colors. If \code{'none'} (\code{'^no|^f|^bin'}),
+#'   Seed colors are simply repeated in each level (sampling is off). Otherwise, RGB values are adjusted
 #'   together, resulting in a gradient.
 #' @details
 #' If \code{x} and \code{by} are not specified (or are characters with a length of 1, in which case they
@@ -143,7 +144,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       return(sets$grey(n)) else sets$grey(n) else sets[[seed]]
     if(is.null(x) || (ol==1 && n<2)) return(seed)
   }
-  sc=if(grepl('^re|^ran|^o',method,TRUE)){
+  sc=if(grepl('^rel|^ran|^o',method,TRUE)){
     r=if(missing(extend)) 2 else max(.001,extend)
     function(cc,n){
       cc=adjustcolor(cc)
@@ -184,6 +185,8 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       }
       csamp(cc,n)
     }
+  }else if(grepl('^no|^f|^bin',method,TRUE)) function(cc, n){
+    rep(cc, n)
   }else function(cc,n){
     r=max(n,n+n*extend)
     s=vapply(seq_len(r),function(i){
@@ -249,22 +252,62 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
 #'   entered position.
 #' @param options a list of options to pass on to splot.
 #' @examples
-#' # compare a few equivalent ways of looping through a vector
-#' # though you'd probably need to increase the number of runs
-#' # for a consistent determination
+#' # increase the number of runs for more stable estimates
 #'
+#' # compare ways of looping through a vector
 #' splot.bench(
 #'   sapply(1:100,'*',10),
 #'   mapply('*',1:100,10),
 #'   vapply(1:100,'*',0,10),
 #'   unlist(lapply(1:100,'*',10)),
-#'   {a=numeric(100); for(i in 1:100) a[i]=i*10; a}
+#'   {a=numeric(100); for(i in 1:100) a[i]=i*10; a},
+#'   runs = 20, runsize = 200
 #' )
+#'
+#' # compare ways of setting all but the maximum value of each row in a matrix to 0
+#' \dontrun{
+#' mat = matrix(c(rep(1, 4), rep(0, 8)), 4, 3)
+#' splot.bench(
+#'   t(vapply(seq_len(4), function(r){
+#'     mat[r, mat[r,] < max(mat[r,])] = 0
+#'     mat[r,]
+#'   }, numeric(ncol(mat)))),
+#'   do.call(rbind, lapply(seq_len(4), function(r){
+#'     mat[r, mat[r,] < max(mat[r,])] = 0
+#'     mat[r,]
+#'   })),
+#'   do.call(rbind, lapply(seq_len(4), function(r){
+#'     nr = mat[r,]
+#'     nr[nr < max(nr)] = 0
+#'     nr
+#'   })),
+#'   {nm = mat; for(r in seq_len(4)){
+#'     nr = nm[r,]
+#'     nm[r, nr < max(nr)] = 0
+#'   }; nm},
+#'   {nm = mat; for(r in seq_len(4)) nm[r, nm[r,] < max(nm[r,])] = 0; nm},
+#'   {nm = matrix(0, dim(mat)[1], dim(mat)[2]); for(r in seq_len(4)){
+#'     m = which.max(mat[r,])
+#'     nm[r, m] = mat[r, m]
+#'   }; nm},
+#'   {ck = do.call(rbind, lapply(seq_len(4), function(r){
+#'     nr = mat[r,]
+#'     nr < max(nr)
+#'   })); nm = mat; nm[ck] = 0; nm},
+#'   t(apply(mat, 1, function(r){
+#'     r[r < max(r)] = 0
+#'     r
+#'   })),
+#'   runs = 50, runsize = 200
+#' )
+#' }
 #' @export
 
 splot.bench=function(...,runs=20,runsize=200,cleanup=FALSE,print.names=FALSE,options=list()){
   e=sapply(as.character(substitute(list(...)))[-1],function(t)parse(text=t))
+  e = e[!duplicated(names(e))]
   es=length(e)
+  if(!es) stop('no expressions found', call. = FALSE)
   ne=names(e)
   seconds=matrix(NA,runs,es,dimnames=list(c(),ne))
   rs=seq_len(runsize)
@@ -295,6 +338,11 @@ splot.bench=function(...,runs=20,runsize=200,cleanup=FALSE,print.names=FALSE,opt
     dimnames=list(c('total time (seconds)','mean time per run'),icn)),4))
   if(!print.names) if(!missing(print.names) || es>5 || any(nchar(names(e))>50))
     colnames(seconds)=icn
+  if(es == 1 && runs == 1) return(NULL)
   title=paste('timing of',runs,'runs of',runsize,'calls each')
+  if(nrow(seconds) == 1){
+    options$x = colnames(seconds)
+    seconds = seconds[1,]
+  }
   splot(seconds,title=title,labels.filter=FALSE,labels.trim=FALSE,options=options)
 }

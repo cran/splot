@@ -3,6 +3,23 @@
 \encoding{UTF-8}
 
 
+\section{version 0.4.1}{
+
+	\subsection{Improvements}{
+		\itemize{
+			\item allows splot.color sampling to be turned off
+			\item allows splot.bench to handle single runs
+			\item enables more sorting options
+		}
+	}
+	\subsection{Bug fixes}{
+		\itemize{
+			\item correctly does not display error bars when error is set to FALSE
+			\item corrects the x-axis range of scatter plots when x is logical
+			\item corrects bet reassignment given multiple ys
+		}
+	}
+}
 \section{version 0.4.0}{
 
 	\subsection{Additions}{
