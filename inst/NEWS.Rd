@@ -3,20 +3,51 @@
 \encoding{UTF-8}
 
 
-\section{version 0.4.1}{
+\section{version 0.4.2}{
 
+	\subsection{Additions}{
+		\itemize{
+			\item assign colors in the scale of numeric values with splot.color's
+  grade argument.
+		}
+	}
 	\subsection{Improvements}{
 		\itemize{
-			\item allows splot.color sampling to be turned off
-			\item allows splot.bench to handle single runs
-			\item enables more sorting options
+			\item makes a legend for colorby in more cases.
+			\item allows renaming and reordering of character or factor y levels.
+			\item more broadly retains character and factor level orders.
+			\item more broadly accounts for missing values.
+			\item better handles colorby x aggregation.
+			\item splot.color returns shorter color codes when opacity is 1.
 		}
 	}
 	\subsection{Bug fixes}{
 		\itemize{
-			\item correctly does not display error bars when error is set to FALSE
-			\item corrects the x-axis range of scatter plots when x is logical
-			\item corrects bet reassignment given multiple ys
+			\item corrects application of adjustments in splot.color when no sampling
+  method is used.
+			\item corrects connected line paths when sparse.
+			\item calculates frequencies of y levels within by and between splits.
+			\item corrects some colorby x and by assignments.
+			\item preserves color assignments when colorby has multiple arguments,
+  and some levels of by are empty.
+			\item avoids error when a level of split is empty.
+		}
+	}
+}
+\section{version 0.4.1}{
+
+	\subsection{Improvements}{
+		\itemize{
+			\item allows splot.color sampling to be turned off.
+			\item allows splot.bench to handle single runs.
+			\item enables more sorting options.
+		}
+	}
+	\subsection{Bug fixes}{
+		\itemize{
+			\item correctly does not display error bars when error is set to FALSE.
+			\item corrects the x-axis range of scatter plots when x is logical.
+			\item corrects bet reassignment given multiple ys.
 		}
 	}
 }
@@ -33,7 +64,7 @@
 	}
 	\subsection{Improvements}{
 		\itemize{
-			\item general improvements in automatic settings
+			\item general improvements in automatic settings.
 			\item more reliable connection between data and line colors, types, and widths.
 			\item provides more control over the legend and colorby.
 			\item improved reading of the y and su arguments.
@@ -70,7 +101,7 @@
 	\subsection{Bug fixes}{
 		\itemize{
 			\item corrected y-axis labeling for bar plots when autori is true.
-			\item custom notes now overwrite all other note elements,
+			\item custom notes now overwrite all other note elements.
 			\item specified x levels are now appropriately applied when mv.as.x is true.
 			\item standardized lty behavior across types, and prevented it from causing errors.
 			\item fixed an issue with longer vectors entered directly as arguments.
