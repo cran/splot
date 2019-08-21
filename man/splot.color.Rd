@@ -7,7 +7,7 @@
 splot.color(x = NULL, by = NULL, seed = "pastel", brightness = 0,
   luminance = 0, opacity = 1, extend = 0.7, lighten = FALSE,
   shuffle = FALSE, flat = TRUE, method = "scale", grade = FALSE,
-  decreasing = TRUE, nas = "#000000")
+  decreasing = FALSE, nas = "#000000")
 }
 \arguments{
 \item{x}{dictates the number and shade of colors. If a single value, returns that many samples of the
@@ -73,7 +73,8 @@ of 1; e.g., \code{x=10}), the vector's length (if \code{x} is numeric), or the c
 (if \code{x} is a factor or character vector).
 }
 \examples{
-# including no arguments or just a palette name will only return the palette as a character vector
+# including no arguments or just a palette name will only return
+# the palette as a character vector
 pastel_palette = splot.color()
 dark_palette = splot.color('dark')
 

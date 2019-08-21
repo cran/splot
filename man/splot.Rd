@@ -8,21 +8,23 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   levels = list(), sort = NULL, error = "standard",
   error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE,
   colors = "pastel", ..., colorby = NULL, colorby.leg = TRUE,
-  color.lock = FALSE, color.offset = 1.1, opacity = 1, x = NULL,
-  by = NULL, between = NULL, cov = NULL, line.type = "l",
-  mv.scale = "none", mv.as.x = FALSE, save = FALSE,
-  format = cairo_pdf, dims = dev.size(), file.name = "splot",
-  myl = NULL, mxl = NULL, autori = TRUE, xlas = 0, ylas = 1,
-  xaxis = TRUE, yaxis = TRUE, bw = "nrd0", adj = 2,
-  breaks = "scott", leg = "outside", lpos = "auto", lvn = TRUE,
-  leg.title = TRUE, leg.args = list(), title = TRUE, labx = TRUE,
-  laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE,
-  note = TRUE, font = c(title = 2, sud = 1, leg = 1, leg.title = 2,
-  note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9, note = 0.7,
-  points = 1), sud = TRUE, labels = TRUE, labels.filter = "_",
-  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
-  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
-  check.height = TRUE, model = FALSE, options = NULL, add = NULL)
+  color.lock = FALSE, color.offset = 1.1, color.summary = "mean",
+  opacity = 1, x = NULL, by = NULL, between = NULL, cov = NULL,
+  line.type = "l", mv.scale = "none", mv.as.x = FALSE,
+  save = FALSE, format = cairo_pdf, dims = dev.size(),
+  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
+  xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE,
+  breaks = "sturges", density.fill = TRUE, density.opacity = 0.4,
+  density.args = list(), leg = "outside", lpos = "auto",
+  lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE,
+  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
+  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1,
+  leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9,
+  note = 0.7, points = 1), sud = TRUE, labels = TRUE,
+  labels.filter = "_", labels.trim = 20, points = TRUE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet
+  = TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
+  options = NULL, add = NULL)
 }
 \arguments{
 \item{y}{a formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
@@ -76,8 +78,8 @@ is treated as infinite (set to \code{Inf}).}
 \code{\link[stats]{lm}}. For (potentially) bendy lines, \code{'loess'} (matching \code{'^loe|^po|^cu'}) will use
 \code{\link[stats]{loess}}, and \code{'spline'} (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}.
 If \code{y} is not numeric and has only 2 levels, \code{'probability'} (\code{'^pr|^log'}) will draw probabilities
-estimated by a logistic regression (\code{glm(y~x,binomial)}). \code{'connected'} (\code{'^e|^co|^d'}) will draw
-lines connecting all points, and \code{FALSE} will not draw any lines.}
+estimated by a logistic regression (\code{glm(y ~} \code{x, binomial)}). \code{'connected'} (\code{'^e|^co|^d'}) will
+draw lines connecting all points, and \code{FALSE} will not draw any lines.}
 
 \item{colors}{sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
 \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by}
@@ -108,6 +110,12 @@ of \code{y} (\code{rnorm(100)} in this case).}
 
 \item{color.offset}{how much points or histogram bars should be offset from the initial color used for lines. Default is
 1.1; values greater than 1 lighten, and less than 1 darken.}
+
+\item{color.summary}{specifies the function used to collapse multiple colors for a single display. Either a string
+matching one of \code{'mean'} (which uses \code{\link{splot.colormean}} to average RGB values), \code{'median'} (
+which treats codes as ordered, and selects that at the rounded median), or \code{'mode'} (which selects the most
+common code), or a function which takes color codes in its first argument, and outputs a single color code as a
+character.}
 
 \item{opacity}{a number between 0 and 1; sets the opacity of points, lines, and bars. Semi-opaque lines will sometimes
 not be displayed in the plot window, but will show up when the plot is written to a file.}
@@ -170,12 +178,14 @@ that they extend to the bottom of the y axis.}
 
 \item{xaxis, yaxis}{logical; if \code{FALSE}, the axis will not be drawn.}
 
-\item{bw}{sets the smoothing bandwidth when plotting densities. Default is \code{'nrd0'}. See
-\code{\link[stats]{density}}.}
-
-\item{adj}{adjusts the smoothing of densities (\code{adj * bw}). See \code{\link[stats]{density}}.}
-
 \item{breaks}{determines the width of histogram bars. See \code{\link[graphics]{hist}}.}
+
+\item{density.fill}{logical; \code{FALSE} will turn off polygon fills when they are displayed, \code{TRUE} will replace
+histograms with polygons.}
+
+\item{density.opacity}{opacity of the density polygons, between 0 and 1.}
+
+\item{density.args}{list of arguments to be passed to \code{\link[stats]{density}}.}
 
 \item{leg}{sets the legend inside or outside the plot frames (when a character matching \code{'^i'}, or a character
 matching \code{'^o'} or a number respectively), or turns it off (when \code{FALSE}). When inside, a legend is drawn in
@@ -261,8 +271,8 @@ corresponding panel will be blank. See the input section.}
 
 \item{prat}{panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A
 single number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels
-and the legend panel. For example, \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame a
-relative width of 1.}
+and the legend panel. For example, \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame
+a relative width of 1.}
 
 \item{check.height}{logical; if \code{FALSE}, the height of the plot frame will not be checked before plotting is
 attempted. The check tries to avoid later errors, but may prevent plotting when a plot is possible.}
@@ -271,10 +281,10 @@ attempted. The check tries to avoid later errors, but may prevent plotting when 
 with what is plotted since variables may be treated differently, particularly in the case of interactions.}
 
 \item{options}{a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
-options for multiple plots (e.g., \code{opt =} \code{list(type = 'bar',} \code{colors = 'grey',}
-\code{bg = '#999999');} \code{splot(x~y,} \code{options = opt)}).
+options for multiple plots (e.g., \code{opt = list(}\code{type = 'bar',} \code{colors = 'grey',}
+\code{bg = '#999999');} \code{splot(x ~ y,} \code{options = opt)}).
 use \code{\link[base]{quote}} to include options that are to be evaluated within the function (e.g.,
-\code{opt =} \code{list(su =} \code{quote(y>0))}).}
+\code{opt =} \code{list(su =} \code{quote(y > 0))}).}
 
 \item{add}{evaluated within the function, so you can refer to the objects that are returned, to variable names (those
 from an entered data frame or entered as arguments), or entered data by their position, preceded by '.' (e.g.,
@@ -306,11 +316,11 @@ If the text of x-axis levels (those corresponding to the levels of \code{x}) are
 overlapping. To try and avoid this, by default longer texts are trimmed (dictated by \code{labels.trim}), and at some
 point the orientation of level text is changed (settable with \code{xlas}), but you may still see level text missing.
 To make these visible, you can reduce \code{labels.trim} from the default of 20 (or rename the levels of that variable),
-make the level text vertical (\code{xlas=3}), or expand your plot window if possible.
+make the level text vertical (\code{xlas = 3}), or expand your plot window if possible.
 
 \strong{missing levels, lines, and/or error bars}
 
-By default (if \code{drop=TRUE}), levels of \code{x} with no data are dropped, so you may not see every level of your
+By default (if \code{drop = TRUE}), levels of \code{x} with no data are dropped, so you may not see every level of your
 variable, at all or at a level of \code{by} or \code{between}. Sometimes error bars cannot be estimated (if, say, there
 is only one observation at the given level), but lines are still drawn in these cases, so you may sometimes see levels
 without error bars even when error bars are turned on. Sometimes (particularly when \code{drop['x']} is \code{FALSE}),
@@ -343,11 +353,11 @@ as levels), so anything entered as \code{by} is treated as \code{between[1]}, \c
 \strong{named vectors}
 
 Named vector arguments like \code{font}, \code{cex}, and \code{drop} can be set with a single value, positionally, or
-with names. If a single value is entered (e.g., \code{drop=FALSE}), this will be applied to each level (i.e.,
-\code{c(x=FALSE,by=FALSE,bet=FALSE)}). If more than one value is entered, these will be treated positionally (e.g.,
-\code{cex=c(2,1.2)} would be read as \code{c(title=2,sud=1.2,leg=.9,note=.7,points=1)}). If values are named, only
-named values will be set, with other defaults retained (e.g., \code{cex=c(note=1.2)} would be read as
-\code{c(title=1.5,sud=.9,leg=.9,note=1.2,points=1)}).
+with names. If a single value is entered (e.g., \code{drop = FALSE}), this will be applied to each level (i.e.,
+\code{c(x = FALSE, by = FALSE, bet = FALSE)}). If more than one value is entered, these will be treated positionally
+(e.g., \code{cex =} \code{c(2, 1.2)} would be read as \code{c(title = 2, sud = 1.2, leg = .9, note = .7, points = 1)}).
+If values are named, only named values will be set, with other defaults retained (e.g., \code{cex =} \code{c(note = 1.2)}
+would be read as \code{c(title = 1.5, sud = .9, leg = .9, note = 1.2, points = 1)}).
 }
 
 \examples{

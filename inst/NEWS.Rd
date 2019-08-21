@@ -3,6 +3,38 @@
 \encoding{UTF-8}
 
 
+\section{version 0.5.0}{
+
+	\subsection{Additions}{
+		\itemize{
+			\item specify how colors are interpolated with color.summary.
+			\item calculate average colors with the splot.colormean function.
+			\item fill the area under each density lines with its color with
+  density.fill = TRUE (default), adjust the fill's opacity
+  with density.opacity, and further control the densities with
+  arguments in density.args (which replaces the old bw and adj
+  arguments).
+		}
+	}
+	\subsection{Improvements}{
+		\itemize{
+			\item broadens colorby applicability and flexibility.
+			\item tweaks default spacing rules to maximize plot areas.
+			\item aligns axis label specification for density with other types.
+			\item better retains or infers names for multiple variables.
+			\item avoids an error when colorby's by has missing values.
+		}
+	}
+	\subsection{Bug fixes}{
+		\itemize{
+			\item corrects several colorby assignment issues.
+			\item handles mixed-type multiple ys by converting non-numeric variables
+  to numeric when other numeric variables are included.
+			\item maintains variable ordering when displaying counts of categorical ys.
+			\item includes colorby variable name in split note when split.
+		}
+	}
+}
 \section{version 0.4.2}{
 
 	\subsection{Additions}{
