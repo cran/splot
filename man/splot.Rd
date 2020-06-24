@@ -10,20 +10,19 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   colors = "pastel", ..., colorby = NULL, colorby.leg = TRUE,
   color.lock = FALSE, color.offset = 1.1, color.summary = "mean",
   opacity = 1, x = NULL, by = NULL, between = NULL, cov = NULL,
-  line.type = "l", mv.scale = "none", mv.as.x = FALSE,
-  save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
-  xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE,
-  breaks = "sturges", density.fill = TRUE, density.opacity = 0.4,
-  density.args = list(), leg = "outside", lpos = "auto",
-  lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE,
-  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1,
-  leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9,
-  note = 0.7, points = 1), sud = TRUE, labels = TRUE,
+  line.type = "l", mv.scale = "none", mv.as.x = FALSE, save = FALSE,
+  format = cairo_pdf, dims = dev.size(), file.name = "splot",
+  myl = NULL, mxl = NULL, autori = TRUE, xlas = 0, ylas = 1,
+  xaxis = TRUE, yaxis = TRUE, breaks = "sturges", density.fill = TRUE,
+  density.opacity = 0.4, density.args = list(), leg = "outside",
+  lpos = "auto", lvn = TRUE, leg.title = TRUE, leg.args = list(),
+  title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2,
+  sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1,
+  leg = 1, leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg =
+  0.9, note = 0.7, points = 1), sud = TRUE, labels = TRUE,
   labels.filter = "_", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet
-  = TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
+  TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
   options = NULL, add = NULL)
 }
 \arguments{
@@ -83,7 +82,7 @@ draw lines connecting all points, and \code{FALSE} will not draw any lines.}
 
 \item{colors}{sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
 \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by}
-has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter
+has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{gray}}. See the \code{col} parameter
 in \code{\link[graphics]{par}} for acceptable manual inputs. To set text and axis colors, \code{col} sets outside
 texts (title, sud, labx, laby, and note), \code{col.sub} or \code{col.main} sets the frame titles, and \code{col.axis}
 sets the axis text and line colors. To set the color of error bars, use \code{error.color}. For histograms, a vector of
@@ -156,7 +155,7 @@ will also scale.}
 
 \item{save}{logical; if \code{TRUE}, an image of the plot is saved to the current working directory.}
 
-\item{format}{the type of file to save plots as. default is \code{\link[grDevices]{cairo_pdf}}. See
+\item{format}{the type of file to save plots as. Default is \code{cairo_pdf}; see
 \code{\link[grDevices]{Devices}} for options.}
 
 \item{dims}{a vector of 2 values (\code{c(width, height)}) specifying the dimensions of a plot to save in inches or
@@ -165,10 +164,10 @@ pixels depending on \code{format}. Defaults to the dimensions of the plot window
 \item{file.name}{a string with the name of the file to be save (excluding the extension, as this is added depending on
 \code{format}).}
 
-\item{myl}{sets the range of the y axis (\code{ylim} of \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}).
+\item{myl}{sets the range of the y axis (\code{ylim} of \code{\link{plot}} or \code{\link[graphics]{barplot}}).
 If not specified, this will be calculated from the data.}
 
-\item{mxl}{sets the range of the x axis (\code{xlim} of \code{\link[graphics]{plot}}). If not specified, this will be
+\item{mxl}{sets the range of the x axis (\code{xlim} of \code{\link{plot}}). If not specified, this will be
 calculated from the data.}
 
 \item{autori}{logical; if \code{FALSE}, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such
@@ -283,7 +282,7 @@ with what is plotted since variables may be treated differently, particularly in
 \item{options}{a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
 options for multiple plots (e.g., \code{opt = list(}\code{type = 'bar',} \code{colors = 'grey',}
 \code{bg = '#999999');} \code{splot(x ~ y,} \code{options = opt)}).
-use \code{\link[base]{quote}} to include options that are to be evaluated within the function (e.g.,
+use \code{\link{quote}} to include options that are to be evaluated within the function (e.g.,
 \code{opt =} \code{list(su =} \code{quote(y > 0))}).}
 
 \item{add}{evaluated within the function, so you can refer to the objects that are returned, to variable names (those

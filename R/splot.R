@@ -45,7 +45,7 @@
 #'   draw lines connecting all points, and \code{FALSE} will not draw any lines.
 #' @param colors sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
 #'   \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by}
-#'   has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter
+#'   has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{gray}}. See the \code{col} parameter
 #'   in \code{\link[graphics]{par}} for acceptable manual inputs. To set text and axis colors, \code{col} sets outside
 #'   texts (title, sud, labx, laby, and note), \code{col.sub} or \code{col.main} sets the frame titles, and \code{col.axis}
 #'   sets the axis text and line colors. To set the color of error bars, use \code{error.color}. For histograms, a vector of
@@ -102,15 +102,15 @@
 #'   will also scale.
 #' @param mv.as.x logical; if \code{TRUE}, variable names are displayed on the x axis, and \code{x} is treated as \code{by}.
 #' @param save logical; if \code{TRUE}, an image of the plot is saved to the current working directory.
-#' @param format the type of file to save plots as. default is \code{\link[grDevices]{cairo_pdf}}. See
+#' @param format the type of file to save plots as. Default is \code{cairo_pdf}; see
 #'   \code{\link[grDevices]{Devices}} for options.
 #' @param dims a vector of 2 values (\code{c(width, height)}) specifying the dimensions of a plot to save in inches or
 #'   pixels depending on \code{format}. Defaults to the dimensions of the plot window.
 #' @param file.name a string with the name of the file to be save (excluding the extension, as this is added depending on
 #'   \code{format}).
-#' @param myl sets the range of the y axis (\code{ylim} of \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}).
+#' @param myl sets the range of the y axis (\code{ylim} of \code{\link{plot}} or \code{\link[graphics]{barplot}}).
 #'   If not specified, this will be calculated from the data.
-#' @param mxl sets the range of the x axis (\code{xlim} of \code{\link[graphics]{plot}}). If not specified, this will be
+#' @param mxl sets the range of the x axis (\code{xlim} of \code{\link{plot}}). If not specified, this will be
 #'   calculated from the data.
 #' @param autori logical; if \code{FALSE}, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such
 #'   that they extend to the bottom of the y axis.
@@ -192,7 +192,7 @@
 #' @param options a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
 #'   options for multiple plots (e.g., \code{opt = list(}\code{type = 'bar',} \code{colors = 'grey',}
 #'   \code{bg = '#999999');} \code{splot(x ~ y,} \code{options = opt)}).
-#'   use \code{\link[base]{quote}} to include options that are to be evaluated within the function (e.g.,
+#'   use \code{\link{quote}} to include options that are to be evaluated within the function (e.g.,
 #'   \code{opt =} \code{list(su =} \code{quote(y > 0))}).
 #' @param add evaluated within the function, so you can refer to the objects that are returned, to variable names (those
 #'   from an entered data frame or entered as arguments), or entered data by their position, preceded by '.' (e.g.,
@@ -377,7 +377,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     opacity=!missing(opacity) && opacity<=1 && opacity>0
   )
   if(ck$lpm) lpos='center'
-  if(ck$d && !is.data.frame(data)) data=as.data.frame(data)
+  if(ck$d && !is.data.frame(data)) data = if(!is.matrix(data) && !is.list(data))
+    as.data.frame(as.matrix(data)) else as.data.frame(data)
   ck$ltck=(is.logical(ck$line) && ck$line) || !grepl('^F',ck$line)
   if(!ck$ltck && ck$note) note=FALSE
   ck$ltco=if(ck$ltck) if(is.logical(ck$line) || ck$c || grepl('^li|^lm|^st',ck$line,TRUE)) 'li' else
@@ -462,15 +463,16 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       x=parse(text=tx)
       tx=tryCatch(eval(x,data,parent.frame(2)),error=function(e)NULL)
     }else if(is.null(tx)) tx=tryCatch(eval(x,data,parent.frame(3)),error=function(e)NULL)
-    if(is.null(tx) || class(tx)%in%c('name','call','expression','function')) stop('could not find ',x,call.=FALSE)
+    if(is.null(tx) || any(class(tx)%in%c('name','call','expression','function'))) stop('could not find ',x,call.=FALSE)
     if(!is.null(l) && is.null(ncol(tx))) if(length(tx)!=l){
       tx=rep_len(tx,l)
       if(is.call(x)) x=deparse(x)
       warning(x,' is not the same length as y',call.=FALSE)
     }
+    if(!is.null(dim(tx)) && !is.matrix(tx) && !is.data.frame(tx)) tx = as.matrix(tx)
     tx
   }
-  if(!missing(data) && !class(data)%in%c('matrix','data.frame'))
+  if(!missing(data) && !any(class(data)%in%c('matrix','data.frame')))
     data=if(is.character(data)) eval(parse(text=data)) else eval(data,globalenv())
   dat = data.frame(y = tdc(txt$y), check.names = FALSE)
   if(ncol(dat)==1) names(dat)='y'
@@ -1221,7 +1223,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   ck$scol='scols'%in%names(seg)
   for(i in names(cdat)){tryCatch({
     #plotting
-    cl=(if(class(cdat[[i]])=='list') vapply(cdat[[i]],NROW,0) else nrow(cdat[[i]])) > 0
+    cl = (if('list' %in% class(cdat[[i]])) vapply(cdat[[i]], NROW, 0) else nrow(cdat[[i]])) > 0
     if(any(!cl)){
       cdat[[i]]=cdat[[i]][cl]
       if(length(cdat[[i]])==0) next
@@ -1234,8 +1236,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(seg$f2$e) paste0(', ',if(lvn || (ck$mlvn && grepl('^[0-9]',cl[2]))) paste0(ptxt$bet[2],': '),cl[2])
       ),if((length(names(cdat))>1 || !missing(ndisp)) && ndisp) paste(', n =',seg$n[i])
     ) else ''
-    if(!is.null(sort) && ck$t!=2 && class(if(seg$by$e) cdat[[i]][[1]][,'x'] else cdat[[i]][,'x']) %in%
-        c('factor','character')){
+    if(!is.null(sort) && ck$t != 2 && any(class(if(seg$by$e) cdat[[i]][[1]][, 'x'] else cdat[[i]][, 'x']) %in%
+        c('factor','character'))){
       nsl = grepl('^[Ff]', as.character(sort))
       sdir = grepl('^[DdTt]',as.character(sort))
       td=if(seg$by$e) do.call(rbind,cdat[[i]]) else cdat[[i]]
@@ -1260,7 +1262,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(is.numeric(cdat[[i]]$x)) cdat[[i]]$x = as.character(cdat[[i]]$x)
         cdat[[i]]=split(cdat[[i]],cdat[[i]]$by)[lvs(cdat[[i]]$by)]
       }
-      dl=if(cl<-class(cdat[[1]])=='list') length(cdat[[i]]) else 1
+      dl = if(cl <- 'list' %in% class(cdat[[1]])) length(cdat[[i]]) else 1
       mot=paste0('y~0+',paste(names(if(cl) cdat[[i]][[1]] else cdat[[i]])[c(2,cvar)],collapse='+'))
       m=pe=ne=matrix(NA,seg$by$ll,max(c(1,length(seg$x$l))),dimnames=list(seg$by$l,seg$x$l))
       if(flipped) m=pe=ne=t(m)
@@ -1405,7 +1407,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(!'n' %in% dan) density.args$n = 512
       n = density.args$n
       m=list()
-      dl=if(cl<-class(cdat[[i]])=='list') length(cdat[[i]]) else 1
+      dl = if(cl <- 'list' %in% class(cdat[[i]])) length(cdat[[i]]) else 1
       rnl=logical(dl)
       rn=if(is.data.frame(cdat[[i]])) names(ptxt$l.by) else names(cdat[[i]])
       dx = dy = numeric(n * seg$by$ll)
@@ -1453,7 +1455,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(yaxis) axis(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
     }else{
       #scatter
-      dl=if(cl<-class(cdat[[i]])=='list') length(cdat[[i]]) else 1
+      dl = if(cl <- 'list' %in% class(cdat[[i]])) length(cdat[[i]]) else 1
       rn=if(is.data.frame(cdat[[i]])) seg$by$l else names(cdat[[i]])
       td=if(cl) do.call(rbind,cdat[[i]]) else cdat[[i]]
       cx=td[,'x']
