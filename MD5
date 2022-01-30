@@ -1,9 +1,10 @@
-26b3ef791f07b9d51c0b8b59aca860c6 *DESCRIPTION
+d93bde26355cf6db73b0edfcdfae61d2 *DESCRIPTION
 ec750e8357c628ae63703735b7309920 *NAMESPACE
-30c43ae1826aa347cc72801003407d11 *NEWS.md
-410c31a9114e6fd15122b23975c2d6f3 *R/splot.R
+bb587e8fdd9d2e7d1b071fe8f1ff8c3d *NEWS.md
+942b316afe80fb6fabcbf907b9df23ed *R/splot.R
 1daafdf69c48f31c1db6e9cb255680e8 *R/utils.R
-35114056a30193c01732b7d8ec49d5f4 *man/splot.Rd
+4044a9d9b9819f5b88d89cde0fba5e11 *README.md
+71470fe8b60ce44282770c29b4096973 *man/splot.Rd
 87d4a587f5e3ac128e48dfaae8e27674 *man/splot.bench.Rd
 04cd05478f995bcb2b177e22b957fe88 *man/splot.color.Rd
 eea2daea418aca03291c8bb57ff7c372 *man/splot.colormean.Rd

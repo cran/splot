@@ -52,8 +52,6 @@
 #'   two colors would apply to the density line and bars separately (e.g., for \code{color =} \code{c('red','green')}, the
 #'   density line would be red and the histogram bars would be green). See the \code{color.lock} and \code{color.offset}
 #'   arguments for more color controls.
-#' @param ... passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. Arguments before
-#'   this can be named partially; those after must by fully named.
 #' @param colorby a variable or list of arguments used to set colors and the legend, alternatively to \code{by}. If
 #'   \code{by} is not missing, \code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}.
 #'   For example, if \code{by} is a participant ID with multiple observations per participant, and \code{by} is a condition
@@ -62,6 +60,8 @@
 #'   entered positionally or by name. Data entered directly into splot can be accessed by position name preceded by a
 #'   period. For example, \code{splot(rnorm(100),} \code{colorby=.y)} would draw a histogram, with bars colored by the value
 #'   of \code{y} (\code{rnorm(100)} in this case).
+#' @param ... passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. Arguments before
+#'   this can be named partially; those after must by fully named.
 #' @param colorby.leg logical; if \code{FALSE}, a legend for \code{colorby} is never drawn. Otherwise, a legend for
 #'   \code{colorby} will be drawn if there is no specified \code{by}, or for non-scatter plots (overwriting the usual legend).
 #' @param color.lock logical; if \code{FALSE}, colors will not be adjusted to offset lines from points or histogram bars.
@@ -74,6 +74,7 @@
 #'   character.
 #' @param opacity a number between 0 and 1; sets the opacity of points, lines, and bars. Semi-opaque lines will sometimes
 #'   not be displayed in the plot window, but will show up when the plot is written to a file.
+#' @param dark logical; if \code{TRUE}, sets text and axis colors to "white".
 #' @param x secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 #'   If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
 #'   \code{type} will be set to \code{'line'} unless specified.
@@ -317,8 +318,8 @@
 #' var binomial
 
 splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NULL,error='standard',error.color='#585858',
-  error.lwd=2,lim=9,lines=TRUE,colors='pastel',...,colorby=NULL,colorby.leg=TRUE,color.lock=FALSE,color.offset=1.1,
-  color.summary='mean',opacity=1,x=NULL,by=NULL,between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,
+  error.lwd=2,lim=9,lines=TRUE,...,colors='pastel',colorby=NULL,colorby.leg=TRUE,color.lock=FALSE,color.offset=1.1,
+  color.summary='mean',opacity=1,dark = FALSE,x=NULL,by=NULL,between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,
   save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,xaxis=TRUE,
   yaxis=TRUE,breaks='sturges',density.fill=TRUE,density.opacity=.4,density.args=list(),leg='outside',lpos='auto',lvn=TRUE,
   leg.title=TRUE,leg.args=list(),title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,ndisp=TRUE,note=TRUE,
@@ -333,7 +334,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     a=as.list(match.call())[-1]
     options=tryCatch(options,error=function(e)NULL)
     if(is.null(options)) stop('could not find options')
-    return(do.call(splot,c(a[names(a)!='options'],options[!names(options)%in%names(a)])))
+    return(do.call(splot,c(a[names(a)!='options'],options[!names(options)%in%names(a)]), envir = parent.frame()))
   }
   if(!labels) title=sud=sub=labx=laby=note=FALSE
   if(options()$stringsAsFactors){
@@ -582,8 +583,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     by=sub('^y\\.','',ck$mvn)
     if(any(by == '')) by[by == ''] = seq_len(sum(by == ''))
     by=factor(rep(by,each=nr),levels=by)
-    cncls = vapply(dat[, dn], class, '')
-    if(any(cnslsn <- cncls %in% c('numeric', 'integer')) && any(!cnslsn)) for(cnc in which(!cnslsn))
+    cncls = vapply(dat[, dn], function(v) is.numeric(v) || is.integer(v) || is.factor(v), TRUE)
+    if(any(cncls) && any(!cncls)) for(cnc in which(!cncls))
       dat[, cnc] = as.numeric(factor(dat[, cnc], lvs(dat[, cnc])))
     dat=data.frame(y=unlist(dat[,dn],use.names=FALSE))
     if(ncol(td)>length(dn)) dat=cbind(dat,do.call(rbind,lapply(seq_along(dn),function(i)td[,-dn,drop=FALSE])))
@@ -624,7 +625,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(ck$ltym && is.logical(lines) && !lines){ck$lty=FALSE; lty=1}
   if(!is.numeric(dat$y)){
     txt$yax = lvs(dat$y)
-    if(!is.factor(dat$y)) dat$y = factor(dat$y, lvs(dat$y))
+    if(!is.logical(dat$y) && !is.factor(dat$y)) dat$y = factor(dat$y, lvs(dat$y))
     dat$y = as.numeric(dat$y)
   }
   if('by'%in%dn && is.character(dat$by) && all(!grepl('[^0-9]',dat$by)))
@@ -1198,9 +1199,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     cex.axis=1,
     tcl=-.2,
     pch=19,
-    col='#303030',
     xpd=NA
   )
+  if(dark){
+    op$fg = op$col = op$col.axis = op$col.main = op$col.sub = op$col.sub = "white"
+  }
   if(length(pdo)!=0){
     if(any(cpdo<-(npdo<-names(pdo))%in%names(dop))){
       op[npdo[cpdo]]=pdo[cpdo]
@@ -1216,6 +1219,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     if(any(!cpdo)) warning('unused argument', if(sum(!cpdo) == 1) ': ' else 's: ' ,
       paste(names(pdo)[!cpdo], collapse=', '), call.=FALSE)
   }
+  expand_color_code = function(e){
+    if(is.character(e) && all(grepl("^#[0-9a-f]{3}$", e, TRUE))) paste0(e, substring(e, 2)) else e
+  }
+  pdo = lapply(pdo, expand_color_code)
+  op = lapply(op, expand_color_code)
   par(op)
   on.exit(par(dop))
   layout(seg$dmat,c(rep.int(seg$prat[1],seg$dim[2]),if(ck$legcol) seg$prat[if(length(seg$prat)>1) 2 else 1]))
