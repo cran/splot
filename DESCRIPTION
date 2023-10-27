@@ -1,9 +1,10 @@
 Package: splot
 Type: Package
-Title: Split Plot
-Version: 0.5.3
-Author: Micah Iserman
-Maintainer: Micah Iserman <micah.iserman@gmail.com>
+Title: Simplified Plotting for Data Exploration
+Version: 0.5.4
+Authors@R: c(
+    person("Micah", "Iserman", role = c("aut", "cre", "cph"), email = "micah.iserman@gmail.com")
+  )
 Description: Automates common plotting tasks to ease data exploration.
   Makes density plots (potentially overlaid on histograms),
   scatter plots with prediction lines, or bar or line plots with error bars.
@@ -17,6 +18,8 @@ RoxygenNote: 7.2.3
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2023-03-06 18:55:54 UTC; Admin
+Packaged: 2023-10-27 10:09:45 UTC; Admin
+Author: Micah Iserman [aut, cre, cph]
+Maintainer: Micah Iserman <micah.iserman@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-03-06 19:10:02 UTC
+Date/Publication: 2023-10-27 11:40:02 UTC
